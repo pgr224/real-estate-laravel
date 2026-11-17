@@ -3,19 +3,24 @@
 namespace App\Http\Controllers;
 
 use App\Models\Property;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
     public function index()
     {
-        $featuredProperties = Property::where('is_featured', true)->take(3)->get() ?? [];
+        $featuredProperties = Property::query()
+            ->where('is_featured', true)
+            ->latest()
+            ->limit(3)
+            ->get();
 
         $mapProperties = Property::whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->where('latitude', '!=', 0)
             ->where('longitude', '!=', 0)
+            ->select(['id', 'title', 'price', 'latitude', 'longitude'])
+            ->latest()
+            ->limit(100)
             ->get()
             ->map(function ($property) {
                 return [
@@ -24,17 +29,12 @@ class HomeController extends Controller
                     'price' => $property->price,
                     'latitude' => $property->latitude,
                     'longitude' => $property->longitude,
-                    'bedrooms' => $property->bedrooms,
-                    'bathrooms' => $property->bathrooms,
-                    'area_sqft' => $property->area_sqft,
                 ];
             });
 
-        Log::info('Map properties count: ' . $mapProperties->count());
-
         return view('home', [
             'featuredProperties' => $featuredProperties,
-            'mapProperties' => $mapProperties
+            'mapProperties' => $mapProperties,
         ]);
     }
 }

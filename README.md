@@ -111,6 +111,11 @@ For more information on using Laravel Sail, refer to the [official documentation
 
 Liberu Real Estate is open source, released under the permissive MIT license. We invite real estate professionals, developers, and property management teams to contribute to the evolution of real estate software. Together, let's redefine the standards of property management and create a platform that adapts to the unique needs of every real estate professional.
 
+## Product research and roadmap
+
+- [India property market research](docs/market-research-india.md)
+- [Marketplace product roadmap](docs/marketplace-roadmap.md)
+
 Welcome to Liberu Real Estate – where innovation meets efficiency, and the possibilities of real estate management are limitless. Join us on this journey to transform the way we buy, sell, and manage properties in the digital age.
 
 <!--/h-->

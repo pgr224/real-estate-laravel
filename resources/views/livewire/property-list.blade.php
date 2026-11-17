@@ -1,9 +1,9 @@
 @extends('layouts.app')
 @section('content')
-    <div class="">
-        <div class="bg-white dark:bg-gray-900">
-            <div class="grid max-w-screen-xl px-4 py-8 mx-auto lg:gap-8 xl:gap-0 lg:py-16 lg:grid-cols-12">
-                <div class="mr-auto place-self-center lg:col-span-7">
+    <div class="property-list-page">
+        <div class="property-list-hero">
+            <div class="site-container py-8 lg:py-16">
+                <div class="max-w-3xl">
                     <h1
                         class="max-w-2xl mb-4 text-4xl font-extrabold tracking-tight leading-none md:text-5xl xl:text-6xl dark:text-white">
                         Properties for Sale & Rent</h1>
@@ -25,19 +25,16 @@
                         </svg>
                     </a>
                 </div>
-                <div class="hidden lg:mt-0 lg:col-span-5 lg:flex">
-                    <img src="https://static.vecteezy.com/system/resources/previews/025/442/517/original/house-for-rent-real-estate-business-concept-with-houses-tiny-real-estate-agent-or-broker-looking-for-house-in-website-modern-flat-cartoon-style-illustration-on-white-background-vector.jpg"
-                        alt="mockup">
-                </div>
             </div>
+        </div>
 
 
     <div class="container mx-auto px-4 py-8">
-        <div class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
+        <div class="property-list-controls py-8 antialiased md:py-12">
             <div class="mx-auto max-w-screen-xl px-0 2xl:px-0">
                 <div class="d-flex mb-5">
                     <div class="w-full md:w-1/2">
-                        <form class="flex items-center">
+                        <form class="flex items-center" wire:submit.prevent="applySearch">
                             <label for="simple-search" class="sr-only">Search</label>
                             <div class="relative w-full mr-2">
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -48,12 +45,12 @@
                                             clip-rule="evenodd" />
                                     </svg>
                                 </div>
-                                <input type="text" id="simple-search"
+                                <input type="search" id="simple-search" wire:model.live.debounce.300ms="search"
                                     class="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-primary-500 dark:focus:border-primary-500"
-                                    placeholder="Looking for a house, apartment, or commercial space? ..." required="">
+                                    placeholder="Looking for a house, apartment, or commercial space? ...">
                             </div>
 
-                            <button type="button"
+                            <button type="submit"
                                 class="flex items-center justify-center px-4 py-2 text-sm font-medium text-white rounded-lg bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 focus:outline-none dark:focus:ring-primary-800">
                                 <svg class="h-3.5 w-3.5 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                                     width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -65,10 +62,123 @@
                         </form>
                     </div>
                 </div>
+                <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    <div>
+                        <label for="postal-code" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Postal code</label>
+                        <input id="postal-code" type="text" maxlength="32" wire:model.live.debounce.300ms="postalCode"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="property-type" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Property type</label>
+                        <select id="property-type" wire:model.live="propertyType"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="">All types</option>
+                            <option value="House">House</option>
+                            <option value="Apartment">Apartment</option>
+                            <option value="Condo">Condo</option>
+                            <option value="Townhouse">Townhouse</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="status" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Listing status</label>
+                        <select id="status" wire:model.live="status"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="">All statuses</option>
+                            <option value="For Sale">For sale</option>
+                            <option value="For Rent">For rent</option>
+                            <option value="Sold">Sold</option>
+                            <option value="Rented">Rented</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="year-built" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Built after</label>
+                        <input id="year-built" type="number" min="1800" max="{{ now()->year }}" wire:model.live="yearBuilt"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="min-price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Minimum price</label>
+                        <input id="min-price" type="number" min="0" wire:model.live="minPrice"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="max-price" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum price</label>
+                        <input id="max-price" type="number" min="0" wire:model.live="maxPrice"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="min-bedrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Minimum bedrooms</label>
+                        <input id="min-bedrooms" type="number" min="0" wire:model.live="minBedrooms"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="max-bedrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum bedrooms</label>
+                        <input id="max-bedrooms" type="number" min="0" wire:model.live="maxBedrooms"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="min-bathrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Minimum bathrooms</label>
+                        <input id="min-bathrooms" type="number" min="0" wire:model.live="minBathrooms"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="max-bathrooms" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum bathrooms</label>
+                        <input id="max-bathrooms" type="number" min="0" wire:model.live="maxBathrooms"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="min-area" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Minimum area (sq ft)</label>
+                        <input id="min-area" type="number" min="0" wire:model.live="minArea"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="max-area" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Maximum area (sq ft)</label>
+                        <input id="max-area" type="number" min="0" wire:model.live="maxArea"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                    </div>
+                    <div>
+                        <label for="sort-by" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sort by</label>
+                        <select id="sort-by" wire:model.live="sortBy"
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm dark:border-gray-600 dark:bg-gray-700 dark:text-white">
+                            <option value="created_at">Newest</option>
+                            <option value="price_asc">Price: low to high</option>
+                            <option value="price_desc">Price: high to low</option>
+                            <option value="bedrooms">Bedrooms</option>
+                        </select>
+                    </div>
+                    <div class="flex items-end">
+                        <button type="button" wire:click="resetFilters"
+                            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700">
+                            Clear filters
+                        </button>
+                    </div>
+                </div>
+                @if ($amenities->isNotEmpty())
+                    <fieldset class="mb-6">
+                        <legend class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Amenities</legend>
+                        <div class="flex flex-wrap gap-3">
+                            @foreach ($amenities as $amenity)
+                                <label class="inline-flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                                    <input type="checkbox" wire:model.live="selectedAmenities" value="{{ $amenity }}"
+                                        class="rounded border-gray-300 text-primary-600 shadow-sm focus:ring-primary-500">
+                                    <span>{{ $amenity }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                    </fieldset>
+                @endif
+                @if ($errors->any())
+                    <div role="alert" class="mb-6 rounded-md border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/20 dark:text-red-300">
+                        <ul class="list-inside list-disc">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
                 <div class="mb-4 grid gap-4 sm:grid-cols-2 md:mb-8 lg:grid-cols-3 xl:grid-cols-4">
                     @forelse($properties as $property)
                         <div
-                            class="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                            class="property-list-card rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                             <div class="h-56 w-full">
                                 <a href="{{ route('property.detail', $property->id) }}">
                                     <img src="{{ $property->getFirstMediaUrl('images') ?: asset('build/images/property-placeholder.png') }}"
@@ -119,7 +229,7 @@
                                     </div>
                                 </div>
 
-                                <a href="#"
+                                <a href="{{ route('property.detail', $property->id) }}"
                                     class="text-lg font-semibold leading-tight text-gray-900 hover:underline dark:text-white">
                                     {{ Str::limit($property->title, 25) }}</a>
 
@@ -190,7 +300,9 @@
                                 </div>
                             </div>
                         </div>
-                    @endforeach
+                    @empty
+                        <p class="col-span-full py-8 text-center text-gray-500 dark:text-gray-400">No properties match your search.</p>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -198,10 +310,10 @@
         <div class="bg-gray-50 py-8 antialiased dark:bg-gray-900 md:py-12">
             <div class="flex items-center justify-between border-gray-100 bg-white px-4 py-3 sm:px-6">
                 <div class="flex flex-1 justify-between sm:hidden">
-                    <a href="#"
-                        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</a>
-                    <a href="#"
-                        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</a>
+                    <button type="button" wire:click="previousPage" @disabled($properties->onFirstPage())
+                        class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Previous</button>
+                    <button type="button" wire:click="nextPage" @disabled(!$properties->hasMorePages())
+                        class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">Next</button>
                 </div>
                 <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
                     <div>
