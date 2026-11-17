@@ -82,6 +82,21 @@ use HasFactory, SoftDeletes, InteractsWithMedia;
         'insurance_coverage_amount',
         'insurance_premium',
         'insurance_expiry_date',
+        // Indian market fields
+        'rera_number',
+        'carpet_area_sqft',
+        'super_buildup_area_sqft',
+        'floor_number',
+        'total_floors',
+        'facing',
+        'furnishing',
+        'parking_count',
+        'property_age',
+        'maintenance_charge',
+        'city',
+        'state',
+        'pincode',
+        'builder_project_id',
     ];
 
     protected $casts = [
@@ -223,6 +238,21 @@ use HasFactory, SoftDeletes, InteractsWithMedia;
     public function category()
     {
         return $this->belongsTo(PropertyCategory::class, 'property_category_id');
+    }
+
+    public function builderProject()
+    {
+        return $this->belongsTo(BuilderProject::class);
+    }
+
+    public function propertyMedia()
+    {
+        return $this->hasMany(PropertyMedia::class);
+    }
+
+    public function ownerListings()
+    {
+        return $this->hasMany(OwnerListing::class);
     }
 
     // Scopes

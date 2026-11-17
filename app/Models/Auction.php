@@ -35,6 +35,11 @@ class Auction extends Model
         return $this->hasMany(Bid::class);
     }
 
+    public function registrations()
+    {
+        return $this->hasMany(AuctionRegistration::class);
+    }
+
     public function winner()
     {
         return $this->belongsTo(User::class, 'winner_id');

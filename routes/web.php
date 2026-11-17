@@ -24,6 +24,16 @@ use App\Http\Livewire\CalculatorsComponent;
 use App\Http\Livewire\About;
 use App\Http\Livewire\TermsAndConditions;
 use App\Http\Livewire\PrivacyPolicy;
+use App\Http\Livewire\PropertyMarketplace;
+use App\Http\Livewire\PropertyReelFeed;
+use App\Http\Livewire\SmartMediaFeed;
+use App\Http\Livewire\BuilderProjectHub;
+use App\Http\Livewire\CertifiedBrokerHub;
+use App\Http\Livewire\OwnerDashboard;
+use App\Http\Livewire\LiveAuctionRoom;
+use App\Http\Livewire\PropertyMapDiscovery;
+use App\Http\Livewire\StreetViewExplorer;
+use App\Http\Livewire\PropertyShowcase;
 
 
 /*
@@ -78,6 +88,21 @@ Route::get('/privacy', [PageController::class, 'privacy'])->name('privacypolicy'
 Route::get('/services', [PageController::class, 'services'])->name('services');
 
 Route::get('/calculators', CalculatorsComponent::class)->name('calculators');
+
+// ReelEstate AI Marketplace Routes
+Route::get('/marketplace', PropertyMarketplace::class)->name('marketplace');
+Route::get('/reels', PropertyReelFeed::class)->name('reels');
+Route::get('/media', SmartMediaFeed::class)->name('media.feed');
+Route::get('/builders', BuilderProjectHub::class)->name('builders');
+Route::get('/brokers', CertifiedBrokerHub::class)->name('brokers');
+Route::get('/map', PropertyMapDiscovery::class)->name('map.discovery');
+Route::get('/properties/{propertyId}/showcase', PropertyShowcase::class)->name('property.showcase');
+Route::get('/properties/{propertyId}/streetview', StreetViewExplorer::class)->name('property.streetview');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/owner/dashboard', OwnerDashboard::class)->name('owner.dashboard');
+    Route::get('/auctions/live/{auctionId?}', LiveAuctionRoom::class)->name('auctions.live');
+});
 
 require __DIR__.'/socialstream.php';
 

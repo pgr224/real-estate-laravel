@@ -167,6 +167,21 @@ class User extends Authenticatable implements HasDefaultTenant, HasTenants, Fila
         return $this->hasMany(PriceAlert::class);
     }
 
+    public function brokerProfile()
+    {
+        return $this->hasOne(BrokerProfile::class);
+    }
+
+    public function ownerListings()
+    {
+        return $this->hasMany(OwnerListing::class);
+    }
+
+    public function auctionRegistrations()
+    {
+        return $this->hasMany(AuctionRegistration::class);
+    }
+
     public function team()
     {
         return $this->currentTeam();
