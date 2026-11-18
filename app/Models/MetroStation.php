@@ -38,11 +38,10 @@ class MetroStation extends Model
 
     public function scopeNearby(Builder $query, float $latitude, float $longitude, float $radiusKm = 5): Builder
     {
-        return $query->selectRaw(
-            '*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance',
-            [$latitude, $longitude, $latitude]
-        )
-        ->having('distance', '<=', $radiusKm)
-        ->orderBy('distance');
+        $haversine = "( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) )";
+
+        return $query->selectRaw("*, {$haversine} AS distance", [$latitude, $longitude, $latitude])
+            ->whereRaw("{$haversine} <= ?", [$latitude, $longitude, $latitude, $radiusKm])
+            ->orderByRaw("{$haversine} ASC", [$latitude, $longitude, $latitude]);
     }
 }

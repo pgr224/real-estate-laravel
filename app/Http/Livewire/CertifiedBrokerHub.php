@@ -4,8 +4,10 @@ namespace App\Http\Livewire;
 
 use App\Models\BrokerProfile;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.reelestate')]
 class CertifiedBrokerHub extends Component
 {
     use WithPagination;
@@ -45,6 +47,12 @@ class CertifiedBrokerHub extends Component
         return BrokerProfile::with('user')->find($this->selectedBrokerId);
     }
 
+    // Alias for templates that use $broker (singular)
+    public function getBrokerProperty()
+    {
+        return $this->selectedBroker;
+    }
+
     public function getBrokersProperty()
     {
         $query = BrokerProfile::query()->with('user');
@@ -75,11 +83,57 @@ class CertifiedBrokerHub extends Component
         return $query->paginate(12);
     }
 
+    // Dashboard stats for the selected broker
+    public function getActiveDealsCountProperty(): int
+    {
+        if (!$this->selectedBroker) return 0;
+        return $this->selectedBroker->total_deals > 0
+            ? (int) ceil($this->selectedBroker->total_deals * 0.15)
+            : 0;
+    }
+
+    public function getClosedDealsCountProperty(): int
+    {
+        if (!$this->selectedBroker) return 0;
+        return $this->selectedBroker->total_deals;
+    }
+
+    public function getEstimatedPayoutProperty(): float
+    {
+        if (!$this->selectedBroker) return 0;
+        return $this->selectedBroker->total_deals * 25000; // avg commission estimate
+    }
+
+    public function getBuyerLeadsCountProperty(): int
+    {
+        if (!$this->selectedBroker) return 0;
+        return (int) ceil($this->selectedBroker->total_deals * 2.5);
+    }
+
+    public function getClientLeadsProperty()
+    {
+        // Placeholder: would come from a leads table in production
+        return collect();
+    }
+
+    public function getBrokeragePipelineProperty()
+    {
+        // Placeholder: would come from a deals/pipeline table in production
+        return collect();
+    }
+
     public function render()
     {
         return view('livewire.certified-broker-hub', [
             'brokers' => $this->brokers,
             'selectedBroker' => $this->selectedBroker,
+            'broker' => $this->broker,
+            'activeDealsCount' => $this->activeDealsCount,
+            'closedDealsCount' => $this->closedDealsCount,
+            'estimatedPayout' => $this->estimatedPayout,
+            'buyerLeadsCount' => $this->buyerLeadsCount,
+            'clientLeads' => $this->clientLeads,
+            'brokeragePipeline' => $this->brokeragePipeline,
         ]);
     }
 }

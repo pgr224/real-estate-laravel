@@ -27,7 +27,7 @@ use App\Models\Property;
 use App\Models\PropertyFeature;
 use App\Models\Review;
 use App\Models\RightMoveSettings;
-use App\Models\SiteSettings;
+use App\Models\SiteSetting;
 use App\Models\Tenant;
 use App\Models\Transaction;
 use App\Models\ZooplaSettings;
@@ -156,7 +156,7 @@ class Team extends JetstreamTeam
 
     public function siteSettings(): HasMany
     {
-        return $this->hasMany(SiteSettings::class);
+        return $this->hasMany(SiteSetting::class);
     }
 
     public function tenants(): HasMany

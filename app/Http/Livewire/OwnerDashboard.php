@@ -5,9 +5,11 @@ namespace App\Http\Livewire;
 use App\Models\OwnerListing;
 use App\Models\Property;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Auth;
 
+#[Layout('components.layouts.reelestate')]
 class OwnerDashboard extends Component
 {
     use WithPagination;
@@ -83,11 +85,66 @@ class OwnerDashboard extends Component
         return Property::where('user_id', Auth::id())->get();
     }
 
+    // Dashboard stats
+    public function getMyListingsCountProperty(): int
+    {
+        return OwnerListing::where('user_id', Auth::id())->count();
+    }
+
+    public function getNewInquiriesCountProperty(): int
+    {
+        // Placeholder: would come from an inquiries/leads table
+        return 0;
+    }
+
+    public function getVerificationPercentProperty(): int
+    {
+        $total = $this->myListingsCount;
+        if ($total === 0) return 0;
+        $verified = OwnerListing::where('user_id', Auth::id())
+            ->where('verification_status', 'verified')
+            ->count();
+        return (int) round(($verified / $total) * 100);
+    }
+
+    public function getInquiriesProperty()
+    {
+        // Placeholder: would come from an inquiries/contact_messages table
+        return collect();
+    }
+
+    public function getDocumentsProperty()
+    {
+        // Placeholder: could aggregate documents JSON from owner listings
+        $docs = collect();
+        OwnerListing::where('user_id', Auth::id())
+            ->whereNotNull('documents')
+            ->get()
+            ->each(function ($listing) use (&$docs) {
+                if (is_array($listing->documents)) {
+                    $docs = $docs->merge($listing->documents);
+                }
+            });
+        return $docs;
+    }
+
+    public function getRecommendationsProperty()
+    {
+        // Placeholder: AI-based resale recommendations
+        return collect();
+    }
+
     public function render()
     {
         return view('livewire.owner-dashboard', [
             'listings' => $this->listings,
             'userProperties' => $this->userProperties,
+            'myListingsCount' => $this->myListingsCount,
+            'newInquiriesCount' => $this->newInquiriesCount,
+            'verificationPercent' => $this->verificationPercent,
+            'inquiries' => $this->inquiries,
+            'documents' => $this->documents,
+            'recommendations' => $this->recommendations,
         ]);
     }
 }

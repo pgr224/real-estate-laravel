@@ -13,9 +13,9 @@
 <header class="site-header">
     <nav class="site-nav" aria-label="Main navigation">
         <div class="site-nav__inner">
-            <a href="{{ route('home') }}" class="site-brand" aria-label="{{ SiteConfig::get('name') }} home">
+            <a href="{{ route('home') }}" class="site-brand" aria-label="{{ site_setting('name') }} home">
                 <img src="{{ asset('build/images/logo.png') }}" width="40" height="40" alt="" fetchpriority="high" />
-                <span>{{ SiteConfig::get('name') }}</span>
+                <span>{{ site_setting('name') }}</span>
         </a>
 
 

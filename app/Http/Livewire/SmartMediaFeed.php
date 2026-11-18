@@ -4,8 +4,10 @@ namespace App\Http\Livewire;
 
 use App\Models\PropertyMedia;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.reelestate')]
 class SmartMediaFeed extends Component
 {
     use WithPagination;

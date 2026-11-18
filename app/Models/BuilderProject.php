@@ -53,4 +53,9 @@ class BuilderProject extends Model
         if ($this->total_units === 0) return 0;
         return round(($this->available_units / $this->total_units) * 100, 1);
     }
+
+    public function getFirstMediaUrl(string $collection = ''): ?string
+    {
+        return $this->banner_url ?? $this->logo_url ?? null;
+    }
 }

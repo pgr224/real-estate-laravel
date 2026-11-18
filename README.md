@@ -78,6 +78,18 @@ Alternatively, you can build and run the project using Docker. To build the Dock
 
 NOTE 3: Ensure your `.env` file is correctly configured with your database connection details before running migrations.
 
+### One-command local launch
+
+Docker Compose builds the frontend assets and application image, starts MySQL, applies migrations, and launches the site on localhost:
+
+```bash
+docker compose up --build -d
+```
+
+Open [http://localhost:8001](http://localhost:8001). Override the host port with `REAL_ESTATE_APP_PORT` if needed. Follow startup output with `docker compose logs -f app`; stop the services with `docker compose down`. The database, generated local application key, and uploaded files are kept in named volumes when containers are recreated. The database is not published to the host.
+
+The Compose defaults are for local development only. Before deploying to a production host, provide a unique `APP_KEY`, set `APP_ENV=production` and `APP_DEBUG=false`, replace the local database passwords, and configure the production database and HTTPS termination. Do not use the example local passwords in production.
+
 ### Using Laravel Sail
 
 This project also includes support for Laravel Sail, which provides a Docker-based development environment. To use Laravel Sail, follow these steps:

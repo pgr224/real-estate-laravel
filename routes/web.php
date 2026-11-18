@@ -48,7 +48,10 @@ use App\Http\Livewire\PropertyShowcase;
 */
 
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', PropertyMarketplace::class)->name('home');
+Route::get('/legacy-home', [HomeController::class, 'index'])->name('legacy.home');
+Route::redirect('/login', '/app/login')->name('login');
+Route::redirect('/register', '/app/register')->name('register');
 
 Route::post('/bookings', [BookingController::class, 'store']);
 Route::put('/bookings/{booking}', [BookingController::class, 'update']);
@@ -60,6 +63,8 @@ Route::get('/booking-calendar', BookingCalendar::class)->middleware('auth')->nam
 Route::get('/properties', PropertyList::class)->name('property.list');
 Route::get('/properties/search', [App\Http\Controllers\PropertyController::class, 'search'])->name('property.search');
 Route::get('/properties/{propertyId}', PropertyDetail::class)->name('property.detail');
+Route::get('/properties/{propertyId}/view', PropertyDetail::class)->name('property.show');
+Route::get('/properties/{propertyId}/detail', PropertyDetail::class)->name('properties.show');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/apply/{property}', RentalApplicationForm::class)->name('rental.apply');
     Route::get('/applications', [App\Http\Controllers\TenantController::class, 'applications'])->name('tenant.applications');
@@ -105,4 +110,3 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 require __DIR__.'/socialstream.php';
-

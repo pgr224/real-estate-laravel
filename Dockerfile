@@ -7,6 +7,18 @@ ARG NODE_VERSION=20-alpine
 
 ###########################################
 
+FROM node:${NODE_VERSION} AS assets
+
+WORKDIR /var/www/html
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY app ./app
+COPY resources ./resources
+COPY postcss.config.cjs tailwind.config.js vite.config.js ./
+RUN npm run build
+
 FROM composer:${COMPOSER_VERSION} AS vendor
 
 FROM php:${PHP_VERSION}-cli-alpine
@@ -111,6 +123,8 @@ RUN composer install \
     --audit
 
 COPY  --chown=${USER}:${USER} . .
+COPY  --chown=${USER}:${USER} --from=assets ${ROOT}/public/build ./public/build
+COPY  --chown=${USER}:${USER} .env.example ./.env
 
 RUN mkdir -p \
     storage/framework/sessions \
@@ -132,8 +146,6 @@ RUN composer install \
     --no-ansi \
     --no-dev \
     && composer clear-cache
-
-COPY .env.example ./.env
 
 RUN chmod +x /usr/local/bin/start-container
 

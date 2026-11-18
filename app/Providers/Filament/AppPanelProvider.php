@@ -19,7 +19,6 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Navigation\MenuItem;
-use Filament\Pages\Dashboard;
 // use App\Filament\App\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
@@ -72,7 +71,7 @@ class AppPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
-                Dashboard::class,
+                Pages\Dashboard::class,
                 Pages\EditProfile::class,
                 Profile::class,
             ])

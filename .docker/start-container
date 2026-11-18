@@ -4,24 +4,39 @@ set -e
 container_mode=${CONTAINER_MODE:-"http"}
 octane_server=${OCTANE_SERVER}
 running_migrations_and_seeders=${RUNNING_MIGRATIONS_AND_SEEDERS:-"false"}
+running_migrations=${RUNNING_MIGRATIONS:-"false"}
+running_seeders=${RUNNING_SEEDERS:-"false"}
 
 echo "Container mode: $container_mode"
 
 initialStuff() {
+    # Generate the key before caching configuration so the cached config uses it.
+    if [ -z "$APP_KEY" ]; then
+        local_key_file=storage/app/.app-key
+        if [ -s "$local_key_file" ]; then
+            APP_KEY=$(cat "$local_key_file")
+        else
+            APP_KEY=$(php artisan key:generate --show)
+            umask 077
+            printf '%s' "$APP_KEY" > "$local_key_file"
+        fi
+        export APP_KEY
+    fi
+
     php artisan storage:link; \
     php artisan optimize:clear; \
     php artisan event:cache; \
     php artisan config:cache; \
     php artisan route:cache;
 
-    # Generate application key if not set
-    if [ -z "$APP_KEY" ]; then
-        php artisan key:generate
+    if [ ${running_migrations_and_seeders} = "true" ] || [ ${running_migrations} = "true" ]; then
+        echo "Running database migrations ..."
+        php artisan migrate --isolated --force;
     fi
 
-    if [ ${running_migrations_and_seeders} = "true" ]; then
-        echo "Running migrations and seeding database ..."
-        php artisan migrate --isolated --seed --force;
+    if [ ${running_migrations_and_seeders} = "true" ] || [ ${running_seeders} = "true" ]; then
+        echo "Running database seeders ..."
+        php artisan db:seed --force;
     fi
 }
 

@@ -7,13 +7,13 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use App\Models\SiteSetting;
 use App\Services\SiteSettingsService;
 use App\Filament\Admin\Resources\SiteSettingsResource\Pages;
-use Intelrx\Sitesettings\Models\SiteSettings;
 
 class SiteSettingsResource extends Resource
 {
-    protected static ?string $model = SiteSettings::class;
+    protected static ?string $model = SiteSetting::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-cog';
 

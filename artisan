@@ -3,6 +3,16 @@
 
 define('LARAVEL_START', microtime(true));
 
+// Auto-switch to project-configured PHP runtime with extensions if running with bare CLI PHP
+if (!extension_loaded('pdo_sqlite') && !extension_loaded('pdo_mysql')) {
+    $customPhp = __DIR__ . '/../bin/php';
+    if (file_exists($customPhp) && PHP_BINARY !== $customPhp) {
+        $args = array_map('escapeshellarg', array_slice($argv, 1));
+        passthru($customPhp . ' ' . escapeshellarg(__FILE__) . ' ' . implode(' ', $args), $exitCode);
+        exit($exitCode);
+    }
+}
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

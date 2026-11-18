@@ -4,7 +4,7 @@
     <div class="property-map"
         data-property-map
         data-properties='@json($properties)'
-        data-currency="{{ SiteConfig::get('currency') }}"
+        data-currency="{{ site_setting('currency') }}"
         role="region"
         aria-label="Map showing property locations"
         aria-busy="true">

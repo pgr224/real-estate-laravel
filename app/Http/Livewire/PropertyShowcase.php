@@ -4,9 +4,12 @@ namespace App\Http\Livewire;
 
 use App\Models\Property;
 use App\Models\PropertyMedia;
+use App\Models\BrokerProfile;
 use App\Models\BuilderProject;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.reelestate')]
 class PropertyShowcase extends Component
 {
     public ?int $propertyId = null;
@@ -27,7 +30,7 @@ class PropertyShowcase extends Component
     {
         $this->property = Property::with([
             'images', 'features', 'reviews', 'builderProject',
-            'user', 'neighborhood',
+            'user', 'neighborhood', 'propertyMedia',
         ])->find($this->propertyId);
     }
 
@@ -71,11 +74,45 @@ class PropertyShowcase extends Component
         return $this->property->similarProperties(4);
     }
 
+    public function getCommentsProperty()
+    {
+        if (!$this->property) return collect();
+        return $this->property->reviews()
+            ->with('user')
+            ->latest()
+            ->limit(20)
+            ->get();
+    }
+
+    public function getBrokerProperty()
+    {
+        if (!$this->property || !$this->property->agent_id) return null;
+        return BrokerProfile::where('user_id', $this->property->agent_id)
+            ->with('user')
+            ->first();
+    }
+
+    public function getAiAnalysisProperty(): array
+    {
+        // Placeholder: would come from AI analysis service
+        if (!$this->property) return [];
+        return [
+            'price_trend' => 'stable',
+            'investment_score' => 7.5,
+            'rental_yield' => '3.2%',
+            'locality_growth' => 'moderate',
+            'recommendation' => 'Good for long-term investment',
+        ];
+    }
+
     public function render()
     {
         return view('livewire.property-showcase', [
             'media' => $this->media,
             'similarProperties' => $this->similarProperties,
+            'comments' => $this->comments,
+            'broker' => $this->broker,
+            'aiAnalysis' => $this->aiAnalysis,
         ]);
     }
 }

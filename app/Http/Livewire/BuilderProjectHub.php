@@ -4,8 +4,10 @@ namespace App\Http\Livewire;
 
 use App\Models\BuilderProject;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.reelestate')]
 class BuilderProjectHub extends Component
 {
     use WithPagination;
@@ -84,6 +86,8 @@ class BuilderProjectHub extends Component
         return view('livewire.builder-project-hub', [
             'projects' => $this->projects,
             'selectedProject' => $this->selectedProject,
+            'confirmedLeads' => collect(),
+            'unconfirmedLeads' => collect(),
         ]);
     }
 }

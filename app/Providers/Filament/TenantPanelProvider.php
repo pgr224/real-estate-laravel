@@ -6,7 +6,6 @@ use App\Filament\App\Pages;
 use App\Filament\App\Pages\EditProfile;
 use App\Filament\App\Pages\CreateTeam;
 use App\Filament\App\Pages\EditTeam;
-use App\Filament\App\Pages\Tenant\Profile;
 use App\Http\Middleware\TeamsPermission;
 use App\Http\Middleware\AssignDefaultTeam;
 use App\Listeners\CreatePersonalTeam;
@@ -81,7 +80,6 @@ class TenantPanelProvider extends PanelProvider
             ->pages([
                 Dashboard::class,
                 Pages\EditProfile::class,
-                Profile::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets/Home'), for: 'App\\Filament\\Tenant\\Widgets\\Home')
             ->widgets([

@@ -5,8 +5,10 @@ namespace App\Http\Livewire;
 use App\Models\Property;
 use App\Models\BuilderProject;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 use Livewire\WithPagination;
 
+#[Layout('components.layouts.reelestate')]
 class PropertyMarketplace extends Component
 {
     use WithPagination;

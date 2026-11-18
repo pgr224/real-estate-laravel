@@ -273,9 +273,11 @@ use HasFactory, SoftDeletes, InteractsWithMedia;
 
     public function scopeNearby(Builder $query, $latitude, $longitude, $radius): Builder
     {
-        return $query->selectRaw('*, ( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) ) AS distance', [$latitude, $longitude, $latitude])
-            ->having('distance', '<=', $radius)
-            ->orderBy('distance');
+        $haversine = "( 6371 * acos( cos( radians(?) ) * cos( radians( latitude ) ) * cos( radians( longitude ) - radians(?) ) + sin( radians(?) ) * sin( radians( latitude ) ) ) )";
+
+        return $query->selectRaw("*, {$haversine} AS distance", [$latitude, $longitude, $latitude])
+            ->whereRaw("{$haversine} <= ?", [$latitude, $longitude, $latitude, $radius])
+            ->orderByRaw("{$haversine} ASC", [$latitude, $longitude, $latitude]);
     }
 
     public function scopeCategory(Builder $query, $category): Builder

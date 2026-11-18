@@ -91,7 +91,7 @@
                                 <span>{{ number_format($property->area_sqft) }} sq ft</span>
                             </div>
                             <div class="home-property-card__footer">
-                                <strong>{{ SiteConfig::get('currency') }} {{ number_format($property->price) }}</strong>
+                                <strong>{{ site_setting('currency') }} {{ number_format($property->price) }}</strong>
                                 <a href="{{ route('property.detail', $property->id) }}">View details <span aria-hidden="true">→</span></a>
                             </div>
                         </div>

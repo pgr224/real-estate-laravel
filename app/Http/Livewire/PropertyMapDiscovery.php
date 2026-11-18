@@ -5,7 +5,9 @@ namespace App\Http\Livewire;
 use App\Models\Property;
 use App\Models\MetroStation;
 use Livewire\Component;
+use Livewire\Attributes\Layout;
 
+#[Layout('components.layouts.reelestate')]
 class PropertyMapDiscovery extends Component
 {
     public float $centerLat = 19.0760;  // Mumbai default
@@ -17,6 +19,15 @@ class PropertyMapDiscovery extends Component
     public ?float $maxPrice = null;
     public bool $showMetro = true;
     public array $selectedPropertyIds = [];
+
+    public string $searchQuery = '';
+    public bool $nearMetro = false;
+    public bool $sarfaesi = false;
+    public bool $zeroBrokerage = false;
+    public bool $bhk = false;
+    public ?int $selectedPropertyId = null;
+    public int $zoomLevel = 13;
+    public array $favorites = [];
 
     public function updatedCity(): void
     {
@@ -41,14 +52,66 @@ class PropertyMapDiscovery extends Component
         $this->centerLng = $lng;
     }
 
+    public function toggleFilter(string $filter): void
+    {
+        if (property_exists($this, $filter)) {
+            $this->$filter = !$this->$filter;
+        }
+    }
+
+    public function setBudget(?string $val): void
+    {
+        $this->maxPrice = $this->maxPrice == $val ? null : (float) $val;
+    }
+
+    public function searchThisArea(): void
+    {
+        // Re-queries with current centerLat/centerLng
+    }
+
+    public function showCommuteRing(): void
+    {
+        $this->radius = $this->radius == 5 ? 10 : 5;
+    }
+
+    public function recenterMap(): void
+    {
+        $this->updatedCity();
+    }
+
+    public function selectProperty(int $id): void
+    {
+        $this->selectedPropertyId = $this->selectedPropertyId === $id ? null : $id;
+    }
+
+    public function toggleFavorite(int $id): void
+    {
+        if (in_array($id, $this->favorites)) {
+            $this->favorites = array_values(array_diff($this->favorites, [$id]));
+        } else {
+            $this->favorites[] = $id;
+        }
+    }
+
+    public function whatsappInquiry(int $id): void
+    {
+        // Placeholder for WhatsApp redirect
+    }
+
     public function getPropertiesProperty()
     {
         $query = Property::query()
             ->whereNotNull('latitude')
             ->whereNotNull('longitude')
             ->nearby($this->centerLat, $this->centerLng, $this->radius)
-            ->with(['images']);
+            ->with(['images', 'propertyMedia']);
 
+        if ($this->searchQuery) {
+            $query->where(function ($q) {
+                $q->where('title', 'like', "%{$this->searchQuery}%")
+                  ->orWhere('location', 'like', "%{$this->searchQuery}%");
+            });
+        }
         if ($this->city) {
             $query->where('city', $this->city);
         }
@@ -60,6 +123,9 @@ class PropertyMapDiscovery extends Component
         }
         if ($this->maxPrice) {
             $query->where('price', '<=', $this->maxPrice);
+        }
+        if ($this->bhk) {
+            $query->whereIn('bedrooms', [2, 3]);
         }
 
         return $query->limit(100)->get();
@@ -76,9 +142,17 @@ class PropertyMapDiscovery extends Component
 
     public function render()
     {
+        $budgetFilters = [
+            ['label' => 'Under ₹50L', 'value' => 5000000],
+            ['label' => '₹50L - ₹1Cr', 'value' => 10000000],
+            ['label' => '₹1Cr - ₹2Cr', 'value' => 20000000],
+            ['label' => 'Above ₹2Cr', 'value' => 50000000],
+        ];
+
         return view('livewire.property-map-discovery', [
             'properties' => $this->properties,
             'metroStations' => $this->metroStations,
+            'budgetFilters' => $budgetFilters,
         ]);
     }
 }
